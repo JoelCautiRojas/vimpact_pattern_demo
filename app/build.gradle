@@ -1,0 +1,80 @@
+plugins {
+    id 'com.android.application'
+}
+
+def servicesFile = rootProject.file("services.properties")
+def servicesProperties = new Properties()
+servicesProperties.load(new FileInputStream(servicesFile))
+
+android {
+    compileSdkVersion 30
+
+    defaultConfig {
+        applicationId "com.visualimpact.testpattern"
+        minSdkVersion 23
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            debuggable false
+            versionNameSuffix ""
+            manifestPlaceholders = [appName:"Impact Trade"]
+            buildConfigField 'String', 'URL_HOST', '"' + servicesProperties['UrlHostProd'] + '"'
+            buildConfigField 'String', 'URL_API', '"' + servicesProperties['UrlApiProd'] + '"'
+        }
+        quality{
+            debuggable true
+            versionNameSuffix "-test"
+            manifestPlaceholders = [appName:"Impact Trade - Test"]
+            buildConfigField 'String', 'URL_HOST', '"' + servicesProperties['UrlHostTest'] + '"'
+            buildConfigField 'String', 'URL_API', '"' + servicesProperties['UrlApiTest'] + '"'
+        }
+        debug{
+            debuggable true
+            versionNameSuffix "-debug"
+            manifestPlaceholders = [appName:"Impact Trade - Debug"]
+            buildConfigField 'String', 'URL_HOST', '"' + servicesProperties['UrlHostDev'] + '"'
+            buildConfigField 'String', 'URL_API', '"' + servicesProperties['UrlApiDev'] + '"'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    dataBinding {
+        enabled = true
+    }
+    viewBinding {
+        enabled = true
+    }
+}
+
+android.buildTypes.each { type ->
+    type.buildConfigField 'String', 'VALIDAR_CUENTA', '"' + servicesProperties['valCuenta'] + '"'
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    implementation 'androidx.room:room-runtime:2.3.0'
+    implementation 'androidx.room:room-rxjava2:2.3.0'
+
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2'
+    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.2'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-jackson:2.9.0'
+}
